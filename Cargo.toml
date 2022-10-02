@@ -3,10 +3,11 @@ name = "seamapi-rs"
 version = "0.1.0"
 edition = "2021"
 authors = ["s e <iamawacko@protonmail.com>"]
-description = "A Rust client for Seam"
+description = "WIP: A Rust client for Seam"
 readme = "README.md"
 license = "MIT"
 
 [dependencies]
 reqwest = { version = "0.11", default-features = false, features = ["json", "blocking", "rustls-tls"] }
 serde = { version = "1.0.144", features = ["derive"] }
+serde_json = "1.0.85"

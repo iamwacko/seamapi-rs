@@ -11,13 +11,15 @@ cargo add seamapi-rs
 ## Usage
 
 ```rust
-use seamapi::Seam;
+use seamapi_rs::Seam;
 
-let seam = Seam::new(None, None);
+fn main() {
+	let seam = Seam::new(None, None);
 
-let workspace = seam.workspaces().get();
+	let workspace = seam.workspaces().get();
 
-println!("{}", workspace);
+	println!("{:?}", workspace);
+}
 ```
 
 ## Development
