@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+#![allow(unused)]
 pub mod devices;
 pub mod workspaces;
 pub mod connect_accounts;
