@@ -3,12 +3,12 @@ use serde_json::Value;
 
 pub struct ActionAttempts(pub String, pub String);
 
+/// This struct isn't meant to be used directly
 #[derive(Deserialize, Serialize)]
-struct Root {
+pub struct Root {
     pub action_attempt: ActionAttempt,
     pub ok: bool,
 }
-
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct ActionAttempt {
@@ -20,11 +20,18 @@ pub struct ActionAttempt {
 }
 
 impl ActionAttempts {
-    pub fn get(self) -> ActionAttempt {
-        let url = format!("{}/action_attempts/get", self.1);
+    pub fn get(self, action_attempt_id: String) -> ActionAttempt {
+        let url = format!(
+            "{}/action_attempts/get?action_attempt_id={}",
+            self.1, action_attempt_id
+        );
         let header = format!("Bearer {}", self.0);
 
-        let req = reqwest::blocking::Client::new().get(url).header("authorization", header).send().expect("Failed to send get request");
+        let req = reqwest::blocking::Client::new()
+            .get(url)
+            .header("authorization", header)
+            .send()
+            .expect("Failed to send get request");
 
         if req.status() == reqwest::StatusCode::NOT_FOUND {
             panic!("Action Attempt not found");

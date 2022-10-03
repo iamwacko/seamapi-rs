@@ -29,4 +29,4 @@ This project is written in Rust, so use the latest stable from [Rustup](https://
 - To run tests, run `cargo test`
 - To build for use `cargo build --release`
 
-Our tests use a seam sandbox environment given by environment variable `SEAM_SaNDbOX_API_KEY`. If you want to run the tests, you should first create a sandobx workspace [on your dashboard](https://dashboard.getseam.com).
+Our tests use a seam sandbox environment given by environment variable `SEAM_SANDbOX_API_KEY`. If you want to run the tests, you should first create a sandobx workspace [on your dashboard](https://dashboard.getseam.com).
