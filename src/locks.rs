@@ -2,7 +2,11 @@ use serde::{Deserialize, Serialize};
 
 pub struct Locks(pub String, pub String);
 
-struct Root {}
+#[derive(Deserialize)]
+struct Root {
+    lock: crate::devices::Device,
+    ok: bool,
+}
 
 #[derive(Serialize, Deserialize)]
 struct ListRoot {
@@ -29,8 +33,8 @@ impl Locks {
         json.locks
     }
 
-    pub fn get(self) {
-        let url = format!("{}/locks/get", self.1);
+    pub fn get(self, device_id: String) -> crate::devices::Device {
+        let url = format!("{}/locks/get?device_id={}", self.1, device_id);
         let header = format!("Bearer {}", self.0);
 
         let req = reqwest::blocking::Client::new()
@@ -44,6 +48,9 @@ impl Locks {
         } else if req.status() != reqwest::StatusCode::OK {
             panic!("{}", req.text().expect("Really bad API failure"));
         }
+
+        let json: Root = req.json().expect("Failed to deserialize JSON"); 
+        json.lock
     }
 
     pub fn lock_door(self, device_id: String) -> crate::action_attempts::ActionAttempt {

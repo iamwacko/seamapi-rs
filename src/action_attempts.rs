@@ -42,8 +42,4 @@ impl ActionAttempts {
         let json: Root = req.json().expect("Failed to deserialize");
         json.action_attempt
     }
-
-    pub fn poll_until_ready(self) {
-        todo!()
-    }
 }

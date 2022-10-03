@@ -32,7 +32,8 @@ pub struct Properties {
     pub locked: bool,
     pub online: bool,
     pub battery_level: f64,
-    pub schlage_metadata: SchlageMetadata,
+    pub schlage_metadata: Option<SchlageMetadata>,
+    pub august_metadata: Option<SchlageMetadata>,
     pub name: String,
 }
 

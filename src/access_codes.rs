@@ -14,7 +14,7 @@ struct ListRoot {
     ok: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct AccessCode {
     pub code: String,
     #[serde(rename = "type")]

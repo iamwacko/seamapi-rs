@@ -3,14 +3,14 @@ use serde_json::Value;
 
 pub struct ConnectWebviews(pub String, pub String);
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ConnectWebview {
     pub connect_webview_id: String,
     pub custom_redirect_url: Value,
     pub url: String,
     pub workspace_id: String,
     pub device_selection_mode: String,
-    pub accepted_provider: Vec<String>,
+    pub accepted_provider: Option<Vec<String>>,
     pub accepted_devices: Vec<Value>,
     pub any_provider_allowed: bool,
     pub any_device_allowed: Value,
@@ -97,7 +97,6 @@ impl ConnectWebviews {
             .post(url)
             .header("Authorization", header)
             .json(&map)
-            .json(&map2)
             .send()
             .expect("Failed to send post request");
 
