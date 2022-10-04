@@ -3,9 +3,10 @@ name = "seamapi-rs"
 version = "0.1.0"
 edition = "2021"
 authors = ["s e <iamawacko@protonmail.com>"]
-description = "WIP: A Rust client for Seam"
+description = "A Rust client for Seam"
 readme = "README.md"
 license = "MIT"
+repository = "https://github.com/iamwacko/seamapi-rs"
 
 [dependencies]
 anyhow = "1.0.65"
