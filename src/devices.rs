@@ -1,3 +1,4 @@
+use anyhow::{Result, Context, bail};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 pub struct Devices(pub String, pub String);
@@ -44,7 +45,7 @@ pub struct SchlageMetadata {
 }
 
 impl Devices {
-    pub fn get(self, device_id: String) -> Device {
+    pub fn get(self, device_id: String) -> Result<Device> {
         let url = format!("{}/devices/get?device_id={}", self.1, device_id);
         let header = format!("Bearer {}", self.0);
 
@@ -52,19 +53,19 @@ impl Devices {
             .get(url)
             .header("Authorization", header)
             .send()
-            .expect("Failed to send get request");
+            .context("Failed to send get request")?;
 
         if req.status() == reqwest::StatusCode::NOT_FOUND {
-            panic!("device not found");
+            bail!("device not found");
         } else if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API failure"))
+            bail!("{}", req.text().context("Really bad API failure")?)
         }
 
-        let json: Root = req.json().expect("Failed to deserialize JSON");
-        json.device
+        let json: Root = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.device)
     }
 
-    pub fn list(self) -> Vec<Device> {
+    pub fn list(self) -> Result<Vec<Device>> {
         let url = format!("{}/devices/list", self.1);
         let header = format!("Bearer {}", self.0);
 
@@ -72,13 +73,13 @@ impl Devices {
             .get(url)
             .header("Authorization", header)
             .send()
-            .expect("Failed to send get request");
+            .context("Failed to send get request")?;
 
         if req.status() != reqwest::StatusCode::OK {
-            panic!();
+            bail!("{}", req.text().context("Failed to turn response into text")?);
         }
 
-        let json: DeviceList = req.json().expect("Failed to deserialize JSON");
-        json.devices
+        let json: DeviceList = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.devices)
     }
 }

@@ -1,3 +1,4 @@
+use anyhow::{Context, Result, bail};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -30,7 +31,7 @@ pub struct UserIdentifier {
 }
 
 impl ConnectedAccounts {
-    pub fn list(self) -> Vec<ConnectedAccount> {
+    pub fn list(self) -> Result<Vec<ConnectedAccount>> {
         let url = format!("{}/connected_accounts/list", self.1);
         let header = format!("Bearer {}", self.0);
 
@@ -38,17 +39,17 @@ impl ConnectedAccounts {
             .get(url)
             .header("Authorization", header)
             .send()
-            .expect("Failed to send get request");
+            .context("Failed to send get request")?;
 
         if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API error"));
+            bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: ListRoot = req.json().expect("Failed to deserialize");
-        json.connected_accounts
+        let json: ListRoot = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.connected_accounts)
     }
 
-    pub fn get(self, connected_account_id: String) -> ConnectedAccount {
+    pub fn get(self, connected_account_id: String) -> Result<ConnectedAccount> {
         let url = format!(
             "{}/connected_accounts/get?connected_account_id={}",
             self.1, connected_account_id
@@ -59,13 +60,13 @@ impl ConnectedAccounts {
             .get(url)
             .header("Authorization", header)
             .send()
-            .expect("Failed to send get request");
+            .context("Failed to send get request")?;
 
         if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API error"));
+            bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: Root = req.json().expect("Failed to deserialize JSON");
-        json.connected_account
+        let json: Root = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.connected_account)
     }
 }

@@ -14,9 +14,9 @@ cargo add seamapi-rs
 use seamapi_rs::Seam;
 
 fn main() {
-	let seam = Seam::new(None, None);
+	let seam = Seam::new(None, None).expect("Failed to get key or URL");
 
-	let workspace = seam.workspaces().get();
+	let workspace = seam.workspaces().get().expect("Failed to get");
 
 	println!("{:?}", workspace);
 }

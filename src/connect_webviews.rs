@@ -1,3 +1,4 @@
+use anyhow::{Context, Result, bail};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -31,7 +32,7 @@ struct ListRoot {
 }
 
 impl ConnectWebviews {
-    pub fn list(self) -> Vec<ConnectWebview> {
+    pub fn list(self) -> Result<Vec<ConnectWebview>> {
         let url = format!("{}/connect_webviews/list", self.1);
         let header = format!("Bearer {}", self.0);
 
@@ -39,16 +40,16 @@ impl ConnectWebviews {
             .get(url)
             .header("Authorization", header)
             .send()
-            .expect("Failed to send get request");
+            .context("Failed to send get request")?;
 
         if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Text error"));
+            bail!("{}", req.text().context("Text error")?);
         }
-        let json: ListRoot = req.json().expect("failed to deserialize JSON");
-        json.connect_webviews
+        let json: ListRoot = req.json().context("failed to deserialize JSON")?;
+        Ok(json.connect_webviews)
     }
 
-    pub fn get(self, connect_webview_id: String) -> ConnectWebview {
+    pub fn get(self, connect_webview_id: String) -> Result<ConnectWebview> {
         let url = format!(
             "{}/connect_webview/get?connect_webview_id={}",
             self.1, connect_webview_id
@@ -59,16 +60,16 @@ impl ConnectWebviews {
             .get(url)
             .header("Authorization", header)
             .send()
-            .expect("Failed to send get request");
+            .context("Failed to send get request")?;
 
         if req.status() == reqwest::StatusCode::NOT_FOUND {
-            panic!("webview not found");
+            bail!("webview not found");
         } else if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API failure"))
+            bail!("{}", req.text().context("Really bad API failure")?)
         }
 
-        let json: Root = req.json().expect("Failed to deserialize JSON");
-        json.connect_webview
+        let json: Root = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.connect_webview)
     }
 
     pub fn create(
@@ -76,7 +77,7 @@ impl ConnectWebviews {
         accepted_provider: Vec<String>,
         custom_redirect_url: Option<String>,
         device_selection_mode: Option<String>,
-    ) -> ConnectWebview {
+    ) -> Result<ConnectWebview> {
         let url = format!("{}/connect_webviews/create", self.1);
         let header = format!("Bearer {}", self.0);
 
@@ -98,13 +99,13 @@ impl ConnectWebviews {
             .header("Authorization", header)
             .json(&map)
             .send()
-            .expect("Failed to send post request");
+            .context("Failed to send post request")?;
 
         if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API failure"));
+            bail!("{}", req.text().context("Really bad API failure")?);
         }
 
-        let json: Root = req.json().expect("Failed to deserialize JSON");
-        json.connect_webview
+        let json: Root = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.connect_webview)
     }
 }

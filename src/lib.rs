@@ -1,4 +1,7 @@
 #![allow(unused)]
+
+use anyhow::{Context, Result};
+
 pub mod access_codes;
 pub mod action_attempts;
 pub mod connect_accounts;
@@ -15,15 +18,15 @@ pub struct Seam {
 }
 
 impl Seam {
-    pub fn new(api_key: Option<&str>, api_url: Option<&str>) -> Self {
+    pub fn new(api_key: Option<&str>, api_url: Option<&str>) -> Result<Self> {
         let mut key = String::new();
         let mut url = String::new();
 
         if api_key == None {
             key = std::env::var("SEAM_API_KEY")
-                .expect("SEAM_API_KEY not found in environment, and api_key not provided");
+                .context("SEAM_API_KEY not found in environment, and api_key not provided")?;
         } else {
-            key = api_key.expect("invalid API key").to_string();
+            key = api_key.context("invalid API key")?.to_string();
         }
 
         if api_url == None {
@@ -32,15 +35,15 @@ impl Seam {
                 _ => "https://connect.getseam.com".to_string(),
             };
         } else {
-            url = api_url.expect("invalid URL").to_string();
+            url = api_url.context("invalid URL")?.to_string();
         }
 
         let leak_key: &'static str = Box::leak(key.into_boxed_str());
         let leak_url: &'static str = Box::leak(url.into_boxed_str());
-        Self {
+        Ok(Self {
             api_key: leak_key,
             api_url: leak_url,
-        }
+        })
     }
 
     pub fn workspace(self) -> workspaces::Workspaces {
