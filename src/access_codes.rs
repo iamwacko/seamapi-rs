@@ -1,4 +1,4 @@
-use anyhow::{Result, Context, bail};
+use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 
 pub struct AccessCodes(pub String, pub String);
@@ -106,7 +106,8 @@ impl AccessCodes {
             bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: crate::action_attempts::Root = req.json().context("Failed to deserialize JSON")?;
+        let json: crate::action_attempts::Root =
+            req.json().context("Failed to deserialize JSON")?;
         Ok(json.action_attempt)
     }
 
@@ -129,7 +130,8 @@ impl AccessCodes {
             bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: crate::action_attempts::Root = req.json().context("Failed to deserialize JSON")?;
+        let json: crate::action_attempts::Root =
+            req.json().context("Failed to deserialize JSON")?;
         Ok(json.action_attempt)
     }
 
@@ -170,7 +172,8 @@ impl AccessCodes {
             bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: crate::action_attempts::Root = req.json().context("Failed to deserialize JSON")?;
+        let json: crate::action_attempts::Root =
+            req.json().context("Failed to deserialize JSON")?;
         Ok(json.action_attempt)
     }
 }

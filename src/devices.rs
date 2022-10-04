@@ -1,4 +1,4 @@
-use anyhow::{Result, Context, bail};
+use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 pub struct Devices(pub String, pub String);
@@ -76,7 +76,10 @@ impl Devices {
             .context("Failed to send get request")?;
 
         if req.status() != reqwest::StatusCode::OK {
-            bail!("{}", req.text().context("Failed to turn response into text")?);
+            bail!(
+                "{}",
+                req.text().context("Failed to turn response into text")?
+            );
         }
 
         let json: DeviceList = req.json().context("Failed to deserialize JSON")?;

@@ -1,4 +1,4 @@
-use anyhow::{Result, Context, bail};
+use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 
 pub struct Locks(pub String, pub String);
@@ -50,7 +50,7 @@ impl Locks {
             bail!("{}", req.text().context("Really bad API failure")?);
         }
 
-        let json: Root = req.json().context("Failed to deserialize JSON")?; 
+        let json: Root = req.json().context("Failed to deserialize JSON")?;
         Ok(json.lock)
     }
 
@@ -74,7 +74,8 @@ impl Locks {
             bail!("{}", req.text().context("Really bad API failure")?);
         }
 
-        let json: crate::action_attempts::Root = req.json().context("Failed to deserialize JSON")?;
+        let json: crate::action_attempts::Root =
+            req.json().context("Failed to deserialize JSON")?;
         Ok(json.action_attempt)
     }
 
@@ -98,7 +99,8 @@ impl Locks {
             bail!("{}", req.text().context("Really bad API failure")?);
         }
 
-        let json: crate::action_attempts::Root = req.json().context("Failed to deserialize JSON")?;
+        let json: crate::action_attempts::Root =
+            req.json().context("Failed to deserialize JSON")?;
         Ok(json.action_attempt)
     }
 }

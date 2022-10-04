@@ -1,5 +1,5 @@
+use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
-use anyhow::{Context, Result, bail};
 
 pub struct Workspaces(pub String, pub String);
 
