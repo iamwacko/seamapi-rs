@@ -1,3 +1,4 @@
+use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 
 pub struct Events(pub String, pub String);
@@ -19,7 +20,7 @@ pub struct Event {
 }
 
 impl Events {
-    pub fn list(self, since: String, device_id: Option<String>) -> Vec<Event> {
+    pub fn list(self, since: String, device_id: Option<String>) -> Result<Vec<Event>> {
         let url = format!("{}/events/list", self.1);
         let header = format!("Bearer {}", self.0);
 
@@ -34,13 +35,13 @@ impl Events {
             .header("Authorization", header)
             .json(&map)
             .send()
-            .expect("Failed to send get request");
+            .context("Failed to send get request")?;
 
         if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API error"));
+            bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: Root = req.json().expect("Failed to deserialize JSON");
-        json.events
+        let json: Root = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.events)
     }
 }

@@ -1,3 +1,4 @@
+use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -20,7 +21,7 @@ pub struct ActionAttempt {
 }
 
 impl ActionAttempts {
-    pub fn get(self, action_attempt_id: String) -> ActionAttempt {
+    pub fn get(self, action_attempt_id: String) -> Result<ActionAttempt> {
         let url = format!(
             "{}/action_attempts/get?action_attempt_id={}",
             self.1, action_attempt_id
@@ -31,15 +32,15 @@ impl ActionAttempts {
             .get(url)
             .header("authorization", header)
             .send()
-            .expect("Failed to send get request");
+            .context("Failed to send get request")?;
 
         if req.status() == reqwest::StatusCode::NOT_FOUND {
-            panic!("Action Attempt not found");
+            bail!("Action Attempt not found");
         } else if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API failue"));
+            bail!("{}", req.text().context("Really bad API failue")?);
         }
 
-        let json: Root = req.json().expect("Failed to deserialize");
-        json.action_attempt
+        let json: Root = req.json().context("Failed to deserialize")?;
+        Ok(json.action_attempt)
     }
 }

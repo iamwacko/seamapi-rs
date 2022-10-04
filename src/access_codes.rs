@@ -1,3 +1,4 @@
+use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 
 pub struct AccessCodes(pub String, pub String);
@@ -25,7 +26,7 @@ pub struct AccessCode {
 }
 
 impl AccessCodes {
-    pub fn list(self, device_id: String) -> Vec<AccessCode> {
+    pub fn list(self, device_id: String) -> Result<Vec<AccessCode>> {
         let url = format!("{}/access_codes/list?device_id={}", self.1, device_id);
         let header = format!("Bearer {}", self.0);
 
@@ -33,19 +34,19 @@ impl AccessCodes {
             .get(url)
             .header("Authorization", header)
             .send()
-            .expect("Failed to send get request");
+            .context("Failed to send get request")?;
 
         if req.status() == reqwest::StatusCode::NOT_FOUND {
-            panic!("device not found");
+            bail!("device not found");
         } else if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API failure"));
+            bail!("{}", req.text().context("Really bad API failure")?);
         }
 
-        let json: ListRoot = req.json().expect("Failed to deserialize JSON");
-        json.access_codes
+        let json: ListRoot = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.access_codes)
     }
 
-    pub fn get(self, access_code_id: String) -> AccessCode {
+    pub fn get(self, access_code_id: String) -> Result<AccessCode> {
         let url = format!(
             "{}/access_codes/get?access_code_id={}",
             self.1, access_code_id
@@ -56,15 +57,15 @@ impl AccessCodes {
             .get(url)
             .header("Authorization", header)
             .send()
-            .expect("Failed to send get request");
+            .context("Failed to send get request")?;
 
         if req.status() == reqwest::StatusCode::NOT_FOUND {
-            panic!("device not found");
+            bail!("device not found");
         } else if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API failure"));
+            bail!("{}", req.text().context("Really bad API failure")?);
         }
-        let json: Root = req.json().expect("Failed to deserialize JSON");
-        json.access_code
+        let json: Root = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.access_code)
     }
 
     pub fn create(
@@ -74,7 +75,7 @@ impl AccessCodes {
         code: Option<String>,
         starts_at: Option<String>,
         ends_at: Option<String>,
-    ) -> crate::action_attempts::ActionAttempt {
+    ) -> Result<crate::action_attempts::ActionAttempt> {
         let url = format!("{}/access_codes/create", self.1);
         let header = format!("Bearer {}", self.0);
 
@@ -98,18 +99,19 @@ impl AccessCodes {
             .header("Authorization", header)
             .json(&map)
             .send()
-            .expect("Failed to send post request");
+            .context("Failed to send post request")?;
         if req.status() == reqwest::StatusCode::NOT_FOUND {
-            panic!("device not found");
+            bail!("device not found");
         } else if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API error"));
+            bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: crate::action_attempts::Root = req.json().expect("Failed to deserialize JSON");
-        json.action_attempt
+        let json: crate::action_attempts::Root =
+            req.json().context("Failed to deserialize JSON")?;
+        Ok(json.action_attempt)
     }
 
-    pub fn delete(self, access_code_id: String) {
+    pub fn delete(self, access_code_id: String) -> Result<crate::action_attempts::ActionAttempt> {
         let url = format!(
             "{}/access_codes/delete?access_code_id={}",
             self.1, access_code_id
@@ -120,15 +122,17 @@ impl AccessCodes {
             .delete(url)
             .header("Authorization", header)
             .send()
-            .expect("Failed to send delete request");
+            .context("Failed to send delete request")?;
 
         if req.status() == reqwest::StatusCode::NOT_FOUND {
-            panic!("access code not found");
+            bail!("access code not found");
         } else if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API error"));
+            bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: crate::action_attempts::Root = req.json().expect("Failed to deserialize JSON");
+        let json: crate::action_attempts::Root =
+            req.json().context("Failed to deserialize JSON")?;
+        Ok(json.action_attempt)
     }
 
     pub fn update(
@@ -138,7 +142,7 @@ impl AccessCodes {
         code: Option<String>,
         starts_at: Option<String>,
         ends_at: Option<String>,
-    ) -> crate::action_attempts::ActionAttempt {
+    ) -> Result<crate::action_attempts::ActionAttempt> {
         let url = format!("{}/access_codes/update", self.1);
         let header = format!("Bearer {}", self.0);
 
@@ -162,13 +166,14 @@ impl AccessCodes {
             .header("Authorization", header)
             .json(&map)
             .send()
-            .expect("failed to send put request");
+            .context("failed to send put request")?;
 
         if req.status() != reqwest::StatusCode::OK {
-            panic!("{}", req.text().expect("Really bad API error"));
+            bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: crate::action_attempts::Root = req.json().expect("Failed to deserialize JSON");
-        json.action_attempt
+        let json: crate::action_attempts::Root =
+            req.json().context("Failed to deserialize JSON")?;
+        Ok(json.action_attempt)
     }
 }
