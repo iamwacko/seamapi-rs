@@ -4,13 +4,6 @@ use serde_json::Value;
 
 pub struct ActionAttempts(pub String, pub String);
 
-/// This struct isn't meant to be used directly
-#[derive(Deserialize, Serialize)]
-pub struct Root {
-    pub action_attempt: ActionAttempt,
-    pub ok: bool,
-}
-
 #[derive(Deserialize, Serialize, Debug)]
 pub struct ActionAttempt {
     pub status: String,
@@ -40,7 +33,7 @@ impl ActionAttempts {
             bail!("{}", req.text().context("Really bad API failue")?);
         }
 
-        let json: Root = req.json().context("Failed to deserialize")?;
-        Ok(json.action_attempt)
+        let json: crate::Response = req.json().context("Failed to deserialize")?;
+        Ok(json.action_attempt.unwrap())
     }
 }

@@ -4,19 +4,7 @@ use serde_json::Value;
 
 pub struct ConnectedAccounts(pub String, pub String);
 
-#[derive(Deserialize)]
-struct Root {
-    connected_account: ConnectedAccount,
-    ok: bool,
-}
-
-#[derive(Deserialize)]
-struct ListRoot {
-    connected_accounts: Vec<ConnectedAccount>,
-    ok: bool,
-}
-
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct ConnectedAccount {
     connected_accunt_id: String,
     created_at: String,
@@ -25,7 +13,7 @@ pub struct ConnectedAccount {
     errors: Vec<Value>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct UserIdentifier {
     pub email: String,
 }
@@ -45,8 +33,8 @@ impl ConnectedAccounts {
             bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: ListRoot = req.json().context("Failed to deserialize JSON")?;
-        Ok(json.connected_accounts)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.connected_accounts.unwrap())
     }
 
     pub fn get(self, connected_account_id: String) -> Result<ConnectedAccount> {
@@ -66,7 +54,7 @@ impl ConnectedAccounts {
             bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: Root = req.json().context("Failed to deserialize JSON")?;
-        Ok(json.connected_account)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.connected_account.unwrap())
     }
 }

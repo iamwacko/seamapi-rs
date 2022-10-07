@@ -1,4 +1,5 @@
 ## Seam for Rust
+[![dependency status](https://deps.rs/crate/seamapi-rs/0.1.1/status.svg)](https://deps.rs/crate/seamapi-rs/0.6.2)
 
 Control locks, lights, and other internet of things devices with Seam's simple API. Checkout out the [documentation](https://docs.getseam.com) or [some examples](examples).
 

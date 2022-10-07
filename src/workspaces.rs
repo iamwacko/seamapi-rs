@@ -3,18 +3,6 @@ use serde::{Deserialize, Serialize};
 
 pub struct Workspaces(pub String, pub String);
 
-#[derive(Serialize, Deserialize)]
-struct Root {
-    workspace: Workspace,
-    ok: bool,
-}
-
-#[derive(Serialize, Deserialize)]
-struct ListRoot {
-    workspaces: Vec<Workspace>,
-    ok: bool,
-}
-
 #[derive(Deserialize, Debug, Serialize)]
 pub struct Workspace {
     pub workspace_id: String,
@@ -40,8 +28,8 @@ impl Workspaces {
             bail!("{}", req.text().context("Really bad API failure")?);
         }
 
-        let json: Root = req.json().context("Failed to deserialize JSON")?;
-        Ok(json.workspace)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.workspace.unwrap())
     }
 
     pub fn reset_sandbox(self) -> Result<()> {
@@ -81,7 +69,7 @@ impl Workspaces {
             bail!("request failed");
         }
 
-        let json: ListRoot = req.json().context("Failed to deserialize JSON")?;
-        Ok(json.workspaces)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.workspaces.unwrap())
     }
 }

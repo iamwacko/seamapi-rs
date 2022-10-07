@@ -4,12 +4,6 @@ use serde::{Deserialize, Serialize};
 pub struct Events(pub String, pub String);
 
 #[derive(Serialize, Deserialize)]
-struct Root {
-    events: Vec<Event>,
-    ok: bool,
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct Event {
     pub event_id: String,
     pub event_type: String,
@@ -41,7 +35,7 @@ impl Events {
             bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: Root = req.json().context("Failed to deserialize JSON")?;
-        Ok(json.events)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.events.unwrap())
     }
 }

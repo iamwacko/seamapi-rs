@@ -1,6 +1,7 @@
 #![allow(unused)]
 
 use anyhow::{Context, Result};
+use serde::{Deserialize, Serialize};
 
 pub mod access_codes;
 pub mod action_attempts;
@@ -10,6 +11,26 @@ pub mod devices;
 pub mod events;
 pub mod locks;
 pub mod workspaces;
+
+/// This struct isn't intended to be used directly
+#[derive(Serialize, Deserialize)]
+pub struct Response {
+    pub lock: Option<crate::devices::Device>,
+    pub locks: Option<Vec<crate::devices::Device>>,
+    pub workspace: Option<crate::workspaces::Workspace>,
+    pub workspaces: Option<Vec<crate::workspaces::Workspace>>,
+    pub action_attempt: Option<crate::action_attempts::ActionAttempt>,
+    pub access_code: Option<crate::access_codes::AccessCode>,
+    pub access_codes: Option<Vec<crate::access_codes::AccessCode>>,
+    pub device: Option<crate::devices::Device>,
+    pub devices: Option<Vec<crate::devices::Device>>,
+    pub events: Option<Vec<crate::events::Event>>,
+    pub connected_account: Option<crate::connect_accounts::ConnectedAccount>,
+    pub connected_accounts: Option<Vec<crate::connect_accounts::ConnectedAccount>>,
+    pub connect_webview: Option<crate::connect_webviews::ConnectWebview>,
+    pub connect_webviews: Option<Vec<crate::connect_webviews::ConnectWebview>>,
+    pub ok: bool,
+}
 
 #[derive(Clone, Copy)]
 pub struct Seam {

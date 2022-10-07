@@ -3,18 +3,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 pub struct Devices(pub String, pub String);
 
-#[derive(Serialize, Deserialize)]
-struct Root {
-    device: Device,
-    ok: bool,
-}
-
-#[derive(Serialize, Deserialize)]
-struct DeviceList {
-    devices: Vec<Device>,
-    ok: bool,
-}
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Device {
     pub device_id: String,
@@ -61,8 +49,8 @@ impl Devices {
             bail!("{}", req.text().context("Really bad API failure")?)
         }
 
-        let json: Root = req.json().context("Failed to deserialize JSON")?;
-        Ok(json.device)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.device.unwrap())
     }
 
     pub fn list(self) -> Result<Vec<Device>> {
@@ -82,7 +70,7 @@ impl Devices {
             );
         }
 
-        let json: DeviceList = req.json().context("Failed to deserialize JSON")?;
-        Ok(json.devices)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.devices.unwrap())
     }
 }

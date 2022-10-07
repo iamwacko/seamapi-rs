@@ -3,18 +3,6 @@ use serde::{Deserialize, Serialize};
 
 pub struct AccessCodes(pub String, pub String);
 
-#[derive(Serialize, Deserialize)]
-struct Root {
-    access_code: AccessCode,
-    ok: bool,
-}
-
-#[derive(Serialize, Deserialize)]
-struct ListRoot {
-    access_codes: Vec<AccessCode>,
-    ok: bool,
-}
-
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct AccessCode {
     pub code: String,
@@ -42,8 +30,8 @@ impl AccessCodes {
             bail!("{}", req.text().context("Really bad API failure")?);
         }
 
-        let json: ListRoot = req.json().context("Failed to deserialize JSON")?;
-        Ok(json.access_codes)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.access_codes.unwrap())
     }
 
     pub fn get(self, access_code_id: String) -> Result<AccessCode> {
@@ -64,8 +52,8 @@ impl AccessCodes {
         } else if req.status() != reqwest::StatusCode::OK {
             bail!("{}", req.text().context("Really bad API failure")?);
         }
-        let json: Root = req.json().context("Failed to deserialize JSON")?;
-        Ok(json.access_code)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.access_code.unwrap())
     }
 
     pub fn create(
@@ -106,9 +94,8 @@ impl AccessCodes {
             bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: crate::action_attempts::Root =
-            req.json().context("Failed to deserialize JSON")?;
-        Ok(json.action_attempt)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.action_attempt.unwrap())
     }
 
     pub fn delete(self, access_code_id: String) -> Result<crate::action_attempts::ActionAttempt> {
@@ -130,9 +117,8 @@ impl AccessCodes {
             bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: crate::action_attempts::Root =
-            req.json().context("Failed to deserialize JSON")?;
-        Ok(json.action_attempt)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.action_attempt.unwrap())
     }
 
     pub fn update(
@@ -172,8 +158,7 @@ impl AccessCodes {
             bail!("{}", req.text().context("Really bad API error")?);
         }
 
-        let json: crate::action_attempts::Root =
-            req.json().context("Failed to deserialize JSON")?;
-        Ok(json.action_attempt)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.action_attempt.unwrap())
     }
 }

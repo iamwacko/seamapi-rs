@@ -20,17 +20,6 @@ pub struct ConnectWebview {
     pub status: String,
 }
 
-#[derive(Deserialize)]
-struct Root {
-    connect_webview: ConnectWebview,
-}
-
-#[derive(Deserialize)]
-struct ListRoot {
-    connect_webviews: Vec<ConnectWebview>,
-    ok: bool,
-}
-
 impl ConnectWebviews {
     pub fn list(self) -> Result<Vec<ConnectWebview>> {
         let url = format!("{}/connect_webviews/list", self.1);
@@ -45,8 +34,8 @@ impl ConnectWebviews {
         if req.status() != reqwest::StatusCode::OK {
             bail!("{}", req.text().context("Text error")?);
         }
-        let json: ListRoot = req.json().context("failed to deserialize JSON")?;
-        Ok(json.connect_webviews)
+        let json: crate::Response = req.json().context("failed to deserialize JSON")?;
+        Ok(json.connect_webviews.unwrap())
     }
 
     pub fn get(self, connect_webview_id: String) -> Result<ConnectWebview> {
@@ -68,8 +57,8 @@ impl ConnectWebviews {
             bail!("{}", req.text().context("Really bad API failure")?)
         }
 
-        let json: Root = req.json().context("Failed to deserialize JSON")?;
-        Ok(json.connect_webview)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.connect_webview.unwrap())
     }
 
     pub fn create(
@@ -105,7 +94,7 @@ impl ConnectWebviews {
             bail!("{}", req.text().context("Really bad API failure")?);
         }
 
-        let json: Root = req.json().context("Failed to deserialize JSON")?;
-        Ok(json.connect_webview)
+        let json: crate::Response = req.json().context("Failed to deserialize JSON")?;
+        Ok(json.connect_webview.unwrap())
     }
 }
