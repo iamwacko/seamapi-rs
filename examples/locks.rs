@@ -4,7 +4,11 @@ fn main() {
     let seam = Seam::new(None, None).unwrap();
 
     let all_locks = seam.locks().list().unwrap();
-    let some_lock = all_locks[1];
+    if all_locks.len() != 0 {
+        let some_lock = &all_locks[0];
 
-    println!("{:?}", some_lock);
+        println!("{:?}", some_lock);
+    } else {
+        println!("No locks");
+    }
 }
